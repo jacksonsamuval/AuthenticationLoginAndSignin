@@ -12,7 +12,7 @@ import com.example.church.model.Ulogin;
 @Repository
 public interface ChurchLoginRepo extends JpaRepository<Ulogin,Integer>
 {	
-	Ulogin findByUsername(String username);
+//	Ulogin findByUsername(String username);
 
 	boolean existsByEmail(String email);
 
@@ -21,6 +21,8 @@ public interface ChurchLoginRepo extends JpaRepository<Ulogin,Integer>
 	Optional<Ulogin> findByEmail(String email);
 
 	Optional<Ulogin> findByResetToken(String token);
+
+	Ulogin findByUsernameOrEmail(String usernameOrEmail, String usernameOrEmail1);
 
 	
 }

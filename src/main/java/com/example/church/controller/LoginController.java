@@ -1,6 +1,8 @@
 package com.example.church.controller;
 
 import org.springframework.security.core.Authentication;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,6 @@ import com.example.church.service.JwtService;
 import com.example.church.service.LoginService;
 
 @RestController
-@RequestMapping("/api/")
 public class LoginController {
 	
 	@Autowired
@@ -36,29 +37,35 @@ public class LoginController {
 	AuthenticationManager authenticationManager;
 
 	
-	@GetMapping({"home","/"})
+	@GetMapping({"/home","/"})
 	public String greet()
 	{
 		return "hello world";
 	}
 	
-	@PostMapping("login")
-	public String login(@RequestBody Map<String, String> requestBody) {
-		String username = requestBody.get("username");
+	@PostMapping("/login")
+	public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> requestBody) {
+		String usernameOrEmail = requestBody.get("usernameOrEmail");
 		String password = requestBody.get("password");
+		 Map<String, Object> response = new HashMap<>();
+
 	    try {
-	    	
 	        Authentication authentication = authenticationManager.authenticate(
-	            new UsernamePasswordAuthenticationToken(username, password)
-	        );
+	            new UsernamePasswordAuthenticationToken(usernameOrEmail, password)
+	           	        );
 
 	        if (authentication.isAuthenticated()) {
-	        	return jwtservice.generateToken(username);
+	        	 String token = jwtservice.generateToken(usernameOrEmail);
+	        	 response.put("token", token);
+	             response.put("status", "Logged in Successfully!");
+	             return ResponseEntity.ok(response);
 	        } else {
-	            return "Authentication failed";
+	        	response.put("status", "Authentication failed");
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	        }
 	    } catch (AuthenticationException e) {
-	        return "Invalid username or password";
+	    	 response.put("status", "Invalid username or password");
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	    }
 	}
 	

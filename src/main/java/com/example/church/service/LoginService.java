@@ -3,6 +3,7 @@ package com.example.church.service;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,16 +34,6 @@ public class LoginService implements UserDetailsService{
 	    repo.save(ulogin);
 	}
 
-
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-	    Ulogin user = repo.findByUsername(username);
-	    if(user == null) {
-	        throw new UsernameNotFoundException("User not found with username: " + username);
-	    }
-	    return new UserPrincipal(user);
-	}
-	
 	 public boolean emailExists(String email) {
 	        return repo.existsByEmail(email);
 	    }
@@ -166,5 +157,26 @@ public class LoginService implements UserDetailsService{
 	        
 	        sendOtpEmail(ulogin, otp);
 		}
+		
+		
+		 @Override
+		 public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+			 	Ulogin user = repo.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+		        if (user == null) {
+		            throw new UsernameNotFoundException("User not found");
+		        }
+		        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
+		    }
 
 }
+
+
+//@Override
+//public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//    Ulogin user = repo.findByUsername(username);
+//    if(user == null) {
+//        throw new UsernameNotFoundException("User not found with username: " + username);
+//    }
+//    return new UserPrincipal(user);
+//}
+//

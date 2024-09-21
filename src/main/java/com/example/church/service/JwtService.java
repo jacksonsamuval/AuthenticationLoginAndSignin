@@ -29,14 +29,13 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String usernameOrEmail) {
         Map<String, Object> claims = new HashMap<>();
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(username)
+                .setSubject(usernameOrEmail)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 100 )) 
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
